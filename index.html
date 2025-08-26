@@ -4,118 +4,121 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Podcast: Introducción a ISSABEL</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* Colores */
+    /* ===== Paleta y base ===== */
     :root{
       --bg:#004E94;           /* Fondo global */
       --card:#ffffff;         /* Superficie de tarjeta */
       --text:#000000;         /* Texto principal */
-      --muted:#B4B7BE;        /* Texto secundario */
+      --muted:#6b7280;        /* Texto secundario */
       --accent:#004E94;       /* Botones/activos */
       --accent-hover:#0060b8; /* Hover */
-      --alert:#BD423C;        /* Acentos */
       --border:#e5e7eb;       /* Bordes claros */
       --chip:#eff6ff;         /* Suave para resaltes */
+
+      --btn-size:76px;        /* tamaño de botones (desktop) */
     }
 
     html,body{height:100%}
-    body {
-  margin:0;
-  font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Inter, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Inter, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    html{ font-size: clamp(15px, 1.5vw, 16px); }
 
+    .wrap{max-width:600px;margin:0 auto;padding:24px}
 
-    .wrap{max-width:1200px;margin:0 auto;padding:24px}
-    .card{
+    /* ===== Header simple ===== */
+    .top{
+      color:#fff;
+      text-align:center;
+      margin-bottom:12px;
+    }
+    .top h1{
+      margin:0 0 4px 0;
+      font-size:24px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .status{
+      display:inline-block;
+      font-size:12px;
+      color:#e5eefb;
+      opacity:.95;
+    }
+
+    /* ===== Tarjeta con flip ===== */
+    .flip-card{
+      background-color:transparent;
+      width:100%;
+      perspective:1000px;
+    }
+    .flip-card-inner{
+      position:relative;
+      width:100%;
+      /* La altura se fijará por JS con el mayor scrollHeight de las caras */
+      transition:transform .8s;
+      transform-style:preserve-3d;
+      border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    .flip-card.flipped .flip-card-inner{
+      transform:rotateY(180deg);
+    }
+    .face{
+      position:absolute;
+      inset:0;
       background:var(--card);
       border:1px solid var(--border);
       border-radius:16px;
-      box-shadow:0 10px 30px rgba(0,0,0,.25);
-      overflow:hidden;
-      display:grid;
-      grid-template-columns: 380px 1fr;
-      gap:24px;
-      align-items:start
+      padding:20px 20px 28px; /* fondo extra para el FAB */
+      backface-visibility:hidden;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      overflow:hidden; /* evita que corte contenido */
+    }
+    .front{ z-index:2; }
+    .back{ transform:rotateY(180deg);
+overflow: hidden; }
+
+    /* ===== Portada ===== */
+    .cover{
+      width:min(320px, 92%);
+      aspect-ratio:1/1;
+      object-fit:cover;
+      border-radius:12px;
+      box-shadow:0 8px 20px rgba(0,0,0,.15);
+      margin:8px 0 14px 0;
     }
 
-
-header{
-  grid-column: 1/3;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; 
-  align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-header h1{
-  grid-column: 2;           
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 24px;          
-  text-align: center;
-  margin: 0;
-  letter-spacing: .2px;
-}
-
-header .badge{
-  grid-column: 3;          
-  justify-self: end;        
-  margin-left: 0;           
-  font-size: 12px;
-  color: var(--muted);
-}
-
-
-    .left{padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px}
-    .cover{width:80%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.15)}
-
-    /* Controles personalizados */
+    /* ===== Controles personalizados ===== */
     .controls{display:flex;gap:16px;align-items:center;justify-content:center}
-    .controls-row{display:flex;gap:16px;align-items:center;justify-content:center}
-    .controls-bottom{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:8px}
+    .controls-bottom{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:10px}
 
     .btn{
       appearance:none;border:0;background:transparent;cursor:pointer;
       padding:0;border-radius:14px;outline-offset:4px;
+      width:var(--btn-size);height:var(--btn-size);
       transition:transform .08s ease, filter .15s ease;
+      display:inline-grid;place-items:center;
     }
     .btn:focus-visible{outline:2px solid var(--accent)}
     .btn:hover{transform:translateY(-1px);filter:drop-shadow(0 4px 10px rgba(0,0,0,.15))}
-    .btn img{display:block;width:76px;height:76px}
+    .btn svg, .btn img{width:100%;height:100%;display:block}
 
-    /* Texto pequeño y meta */
-    .meta {
-  font-size: 25px;
-  color: var(--muted);
-  text-align: center;
-  margin: 12px 0; 
-}
-
-
-    .right{padding:20px;border-left:1px solid var(--border)}
-    .transcript{max-height:60vh;overflow:auto;padding:10px 20px 20px;scroll-behavior:smooth}
-    .line{padding:6px 8px;border-radius:10px;margin:4px 0;line-height:1.5;border:1px solid transparent}
-    .line .time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:16px;color:var(--muted);margin-right:8px}
-    .line.active{background:linear-gradient(90deg, rgba(0,78,148,.12), rgba(0,78,148,.04));border-color:#b3cbe1}
-    .line.active .time{color:#5aa0db}
-
-    .footer{
-      grid-column: 1/3;display:flex;justify-content:space-between;align-items:center;
-      padding:12px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)
+    .meta{
+      font-size:20px;
+      color:var(--muted);
+      text-align:center;
+      margin:6px 0 10px;
     }
-
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    .kbd{
-      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-      background:var(--chip);border:1px solid var(--border);border-bottom-color:#d1d5db;border-radius:6px;padding:1px 6px;font-size:12px;color:#111827
-    }
-    .line:focus{outline:2px solid var(--accent);outline-offset:2px}
 
     /* Toggle autodesplazamiento */
     .toggle{
@@ -125,296 +128,278 @@ header .badge{
     }
     .toggle input{accent-color:var(--accent)}
 
-.line span:not(.time) {
-  display: inline-block;
-  text-align: justify;
-  width: 100%; 
+    /* Botón para girar tarjeta */
+    .btnFlip{
+      background:var(--accent);color:#fff;border:0;border-radius:10px;
+      padding:10px 14px;font-weight:700;cursor:pointer;
+      transition:background .15s ease, transform .08s ease;
+    }
+    .btnFlip:hover{background:var(--accent-hover)}
+    .btnFlip:active{transform:translateY(1px)}
+    .btnFlip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+   
+
+    /* ===== Transcripción ===== */
+    .transcript-wrap{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      gap:10px;
+      height:100%;
+    }
+    .transcript-head{
+      display:flex;justify-content:space-between;align-items:center;
+      gap:8px;margin-bottom:2px;width:100%;max-width:760px;margin-inline:auto;
+    }
+    .transcript-title{
+      font-weight:700;font-size:18px;margin:0;color:#111827;
+    }
+    .transcript{
+      flex:1 1 auto;
+      max-height:100%;
+      overflow:auto;
+scrollbar-gutter: stable;
+      padding:10px 16px 16px;
+      scroll-behavior:smooth;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+      width:100%;max-width:760px;margin-inline:auto;
+    }
+    .line{
+      padding:8px 10px;border-radius:10px;margin:4px 0;line-height:1.5;border:1px solid transparent;
+    }
+    .line .time{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-size:14px;color:var(--muted);margin-right:8px
+    }
+    .line.active{
+      background:linear-gradient(90deg, rgba(0,78,148,.12), rgba(0,78,148,.04));
+      border-color:#b3cbe1
+    }
+    .line.active .time{ color:#5aa0db }
+    .line:focus{ outline:2px solid var(--accent); outline-offset:2px }
+    .line span:not(.time){
+      display:inline-block; text-align:justify; width:100%;
+    }
+
+    /* ===== Responsivo ===== */
+    @media (max-width:900px){
+      :root{ --btn-size:64px; }
+      .wrap{ padding:16px; }
+      .top h1{ font-size:20px; }
+      .meta{ font-size:18px; }
+    }
+    @media (max-width:480px){
+      :root{ --btn-size:56px; }
+      .wrap{ padding:12px; }
+      .top h1{ font-size:18px; }
+      .meta{ font-size:16px; }
+      .btnFlip-fab{ bottom:10px; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto !important; transition:none !important; }
+    }
+
+.front-head{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  max-width:760px;
+  margin-inline:auto;
+  margin-bottom:10px;
 }
+html { overflow-y: scroll; }
 
-/* ===== Responsive ===== */
-
-/* Defaults que nos ayudan a escalar botones y tipografía */
-:root{
-  --btn-size: 76px;    /* tamaño de los botones en desktop */
-  --space: 24px;       /* espaciado general */
-}
-
-/* Asegura que los SVG respeten el tamaño del botón (ignora width/height del SVG) */
-.btn{ width: var(--btn-size); height: var(--btn-size); }
-.btn svg, .btn img{ width:100%; height:100%; }
-
-/* Tipografía fluida suave */
-html{
-  font-size: clamp(15px, 1.5vw, 16px);
-}
-
-/* Tablet y abajo */
-@media (max-width: 900px){
-  .wrap{ padding: 16px; }
-
-  .card{
-    grid-template-columns: 1fr;      /* apila portada/controles arriba y transcripción abajo */
-    gap: 16px;
-    border-radius: 14px;
-  }
-
-  header{
-    grid-column: 1/2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-align: center;
-    padding: 14px 16px;
-  }
-
-  header h1{
-    font-size: 20px;                 /* título más compacto */
-    line-height: 1.2;
-  }
-  header .badge{ align-self: center; }
-
-  .left, .right{ padding: 16px; }
-  .right{ border-left: 0; }          /* sin línea divisoria al apilar */
-
-  .cover{
-    width: min(420px, 92%);          /* portada escalable */
-    aspect-ratio: 1/1;
-  }
-
-  /* Botones y controles */
-  :root{ --btn-size: 64px; }
-  .controls, .controls-row, .controls-bottom{ gap: 12px; }
-
-  .meta{
-    font-size: 18px;
-    margin: 8px 0 6px;
-  }
-
-  /* La transcripción ocupa menos alto para evitar scroll doble en móviles */
-  .transcript{
-    max-height: 45vh;                /* antes 60vh */
-    padding: 6px 14px 14px;
-  }
-
-  .line{ padding: 8px 10px; }
-  .line .time{ font-size: 14px; }
-}
-
-/* Móviles pequeños */
-@media (max-width: 480px){
-  .wrap{ padding: 12px; }
-  header{ padding: 12px; gap: 6px; }
-  header h1{ font-size: 18px; }
-
-  :root{ --btn-size: 56px; }         /* botones cómodos pero no enormes */
-
-  .meta{ font-size: 16px; }
-  .line{ padding: 8px 10px; }
-  .line .time{ font-size: 13px; }
-
-  .transcript{ max-height: 42vh; }
-}
-
-/* Opcional: respeta usuarios con “reducir movimiento” */
-@media (prefers-reduced-motion: reduce){
-  *{ scroll-behavior: auto !important; transition: none !important; }
-}
 
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card" role="application" aria-label="Reproductor de audio con transcripción sincronizada">
-      <header>
-        <h1>Podcast: Introducción a ISSABEL</h1>
-        <span class="badge" id="status">Sin iniciar</span>
-      </header>
-
-      <!-- Columna izquierda -->
-      <div class="left">
-        <!-- Portada -->
-        <img src="Introduccion_a_ISSABEL.png" alt="Portada del podcast" class="cover"/>
-
-        <!-- Audio SIN controles nativos -->
-        <audio id="player" src="Introduccion_a_ISSABEL.mp3" preload="auto"></audio>
-
-        <!-- Controles personalizados -->
-        <div class="controls">
-          <div class="controls-col">
-              <div class="meta" id="meta" aria-live="polite" >00:00 / 00:00</div>
-
-            <div class="controls">
-  <div class="controls-col">
-    <div class="controls-row" role="group" aria-label="Controles de reproducción">
-
-      <!-- Retroceder 10s -->
-      <button id="btnBack" class="btn" aria-label="Retroceder 10 segundos">
-        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
-          <defs>
-            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#0060b8"/>
-              <stop offset="1" stop-color="#004E94"/>
-            </linearGradient>
-          </defs>
-          <circle cx="38" cy="38" r="34" fill="url(#g)"/>
-          <path d="M45 27v22l-16-11z" fill="#fff" opacity=".95"/>
-          <path d="M33 27v22l-16-11z" fill="#fff" opacity=".95"/>
-        </svg>
-      </button>
-
-      <!-- Play/Pausa -->
-      <button id="btnPlay" class="btn" aria-label="Reproducir o Pausar">
-        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
-          <defs>
-            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#004E94"/>
-              <stop offset="1" stop-color="#0060b8"/>
-            </linearGradient>
-          </defs>
-          <circle cx="38" cy="38" r="34" fill="url(#g2)"/>
-          <path d="M31 25l22 13-22 13z" fill="#fff" opacity=".97"/>
-          <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
-        </svg>
-      </button>
-
-      <!-- Avanzar 10s -->
-      <button id="btnFwd" class="btn" aria-label="Avanzar 10 segundos">
-        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
-          <defs>
-            <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#0060b8"/>
-              <stop offset="1" stop-color="#004E94"/>
-            </linearGradient>
-          </defs>
-          <circle cx="38" cy="38" r="34" fill="url(#g3)"/>
-          <path d="M31 27v22l16-11z" fill="#fff" opacity=".95"/>
-          <path d="M43 27v22l16-11z" fill="#fff" opacity=".95"/>
-        </svg>
-      </button>
-
+    <div class="top" role="banner">
+      <h1>Podcast: Introducción a ISSABEL</h1>
+      <span class="status" id="status">Sin iniciar</span>
     </div>
+
+    <div class="flip-card" id="flipCard" role="application" aria-label="Tarjeta de podcast con transcripción al reverso">
+      <div class="flip-card-inner">
+        <!-- ===== Cara frontal: portada + controles ===== -->
+        <section class="face front" aria-label="Reproductor">
+<div class="front-head">
+  <button class="btnFlip" type="button" aria-label="Ver transcripción">
+    Ver transcripción
+  </button>
+</div>
+
+          <img src="Introduccion_a_ISSABEL.png" alt="Portada del podcast" class="cover"/>
+
+          <audio id="player" src="Introduccion_a_ISSABEL.mp3" preload="auto" aria-label="Reproductor de audio"></audio>
+
+          <div class="meta" id="meta" aria-live="polite">00:00 / 00:00</div>
+
+          <div class="controls" role="group" aria-label="Controles de reproducción">
+            <!-- Retroceder 10s -->
+            <button id="btnBack" class="btn" aria-label="Retroceder 10 segundos">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+                <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#0060b8"/><stop offset="1" stop-color="#004E94"/></linearGradient></defs>
+                <circle cx="38" cy="38" r="34" fill="url(#g)"/>
+                <path d="M45 27v22l-16-11z" fill="#fff" opacity=".95"/>
+                <path d="M33 27v22l-16-11z" fill="#fff" opacity=".95"/>
+              </svg>
+            </button>
+
+            <!-- Play/Pausa (el ícono se cambia por JS) -->
+            <button id="btnPlay" class="btn" aria-label="Reproducir o Pausar"></button>
+
+            <!-- Avanzar 10s -->
+            <button id="btnFwd" class="btn" aria-label="Avanzar 10 segundos">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+                <defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#0060b8"/><stop offset="1" stop-color="#004E94"/></linearGradient></defs>
+                <circle cx="38" cy="38" r="34" fill="url(#g3)"/>
+                <path d="M31 27v22l16-11z" fill="#fff" opacity=".95"/>
+                <path d="M43 27v22l16-11z" fill="#fff" opacity=".95"/>
+              </svg>
+            </button>
+          </div>
+
+          
+        </section>
+
+        <!-- ===== Cara trasera: transcripción ===== -->
+        <section class="face back" aria-label="Transcripción">
+          <div class="transcript-wrap">
+            <div class="transcript-head">
+  <h2 class="transcript-title"></h2>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button class="btnFlip" type="button" aria-label="Volver al reproductor">Volver</button>
+    <label class="toggle">
+      <input id="chkAutoscroll" type="checkbox" checked /> Autodesplazar
+    </label>
   </div>
 </div>
 
-
-            <!-- Debajo: Autodesplazar + tiempo -->
-            <div class="controls-bottom">
-              <label class="toggle">
-                <input id="chkAutoscroll" type="checkbox" checked /> Autodesplazar
-              </label>
-            </div>
+            <div class="transcript" id="transcript" aria-live="polite" aria-label="Transcripción sincronizada"></div>
           </div>
-        </div>
-      </div>
 
-      <!-- Columna derecha -->
-      <div class="right">
-        <div class="transcript" id="transcript" aria-live="polite" aria-label="Transcripción sincronizada"></div>
-      </div>
-
-      
-        
+          <!-- FAB opcional también atrás:
+          <button class="btnFlip btnFlip-fab" type="button" aria-label="Volver al reproductor">Volver</button>
+          -->
+        </section>
       </div>
     </div>
   </div>
 
   <script>
-   const cuesData = [
-    { start: 3,   end: 8,   text: "En un Centro de Atención de Llamadas de Emergencia, todo comienza con una llamada." },
-    { start: 8,   end: 18,  text: "Para que esa llamada llegue de manera ordenada y pueda registrarse en el sistema <strong>CAD Saimon</strong>, existe <strong>ISSABEL</strong>, la solución que administra la telefonía y conecta al ciudadano con el operador." },
-    { start: 18,  end: 26,  text: "<strong>ISSABEL</strong> es el módulo que recibe las llamadas, permite contestarlas, transferirlas, ponerlas en espera o unirlas en conferencia." },
-    { start: 26,  end: 35,  text: "Al estar conectado con el <strong>CAD Saimon</strong>, cada llamada queda ligada de inmediato a un folio de incidente, lo que asegura un registro completo para dar seguimiento oportuno." },
-    { start: 35,  end: 42,  text: "<strong>En pocas palabras:</strong> ISSABEL gestiona la llamada y el CAD organiza la emergencia, integrando más recursos para la atención." },
-    { start: 42,  end: 50,  text: "Ambos trabajan juntos para que el operador pueda enfocarse en lo más importante: escuchar al ciudadano, responder con rapidez y no perder información en el proceso." },
-    { start: 50,  end: 61,  text: "Dentro del sistema CAD Saimon, ISSABEL tiene la capacidad de integrar varios servicios de comunicación. Sin embargo, para el trabajo del operador destacan dos componentes esenciales:" },
-    { start: 61,  end: 80,  text: "<ul><li><strong>El PBX IP</strong>, que es el corazón de la telefonía. Administra las llamadas entrantes y salientes, organiza las extensiones de los operadores y gestiona las colas de atención. Gracias a él es posible contestar, transferir, poner en espera y realizar conferencias, asegurando que cada comunicación llegue a su destino correcto.</li></ul>" },
-    { start: 80,  end: 92,  text: "<ul><li><strong>La grabación de llamadas</strong>, que conserva un respaldo de todas las interacciones. Estas grabaciones sirven como evidencia en caso de requerirse por alguna autoridad y garantizan control, seguridad y seguimiento de cada reporte.</li></ul>" },
-    { start: 92,  end: 102, text: "En el contexto operativo, ISSABEL permite que la comunicación sea continua, que las llamadas se asignen de forma ordenada y que exista un control confiable de cada interacción." },
-    { start: 102, end: 111, text: "De esta manera, el sistema respalda al operador en su labor diaria, reduciendo el riesgo de pérdida de información y facilitando la coordinación con otras corporaciones." },
-    { start: 111, end: 121, text: "¡Muy bien! Con esto ya tienes una visión más amplia de qué es ISSABEL, cómo se conecta con el CAD Saimon y cuáles son los componentes que realmente fortalecen tu labor como operador." },
-    { start: 121, end: 9999, text: "En la siguiente lección profundizaremos en los conceptos básicos de telefonía, indispensables para comprender el funcionamiento del sistema en cada llamada." }
-   ];
+    /* ===== Datos de cues (sincronía) ===== */
+    const cuesData = [
+      { start: 3,   end: 8,   text: "En un Centro de Atención de Llamadas de Emergencia, todo comienza con una llamada." },
+      { start: 8,   end: 18,  text: "Para que esa llamada llegue de manera ordenada y pueda registrarse en el sistema <strong>CAD Saimon</strong>, existe <strong>ISSABEL</strong>, la solución que administra la telefonía y conecta al ciudadano con el operador." },
+      { start: 18,  end: 26,  text: "<strong>ISSABEL</strong> es el módulo que recibe las llamadas, permite contestarlas, transferirlas, ponerlas en espera o unirlas en conferencia." },
+      { start: 26,  end: 35,  text: "Al estar conectado con el <strong>CAD Saimon</strong>, cada llamada queda ligada de inmediato a un folio de incidente, lo que asegura un registro completo para dar seguimiento oportuno." },
+      { start: 35,  end: 42,  text: "<strong>En pocas palabras:</strong> ISSABEL gestiona la llamada y el CAD organiza la emergencia, integrando más recursos para la atención." },
+      { start: 42,  end: 50,  text: "Ambos trabajan juntos para que el operador pueda enfocarse en lo más importante: escuchar al ciudadano, responder con rapidez y no perder información en el proceso." },
+      { start: 50,  end: 61,  text: "Dentro del sistema CAD Saimon, ISSABEL tiene la capacidad de integrar varios servicios de comunicación. Sin embargo, para el trabajo del operador destacan dos componentes esenciales:" },
+      { start: 61,  end: 80,  text: "<ul><li><strong>El PBX IP</strong>, que es el corazón de la telefonía. Administra las llamadas entrantes y salientes, organiza las extensiones de los operadores y gestiona las colas de atención. Gracias a él es posible contestar, transferir, poner en espera y realizar conferencias, asegurando que cada comunicación llegue a su destino correcto.</li></ul>" },
+      { start: 80,  end: 92,  text: "<ul><li><strong>La grabación de llamadas</strong>, que conserva un respaldo de todas las interacciones. Estas grabaciones sirven como evidencia en caso de requerirse por alguna autoridad y garantizan control, seguridad y seguimiento de cada reporte.</li></ul>" },
+      { start: 92,  end: 102, text: "En el contexto operativo, ISSABEL permite que la comunicación sea continua, que las llamadas se asignen de forma ordenada y que exista un control confiable de cada interacción." },
+      { start: 102, end: 111, text: "De esta manera, el sistema respalda al operador en su labor diaria, reduciendo el riesgo de pérdida de información y facilitando la coordinación con otras corporaciones." },
+      { start: 111, end: 121, text: "¡Muy bien! Con esto ya tienes una visión más amplia de qué es ISSABEL, cómo se conecta con el CAD Saimon y cuáles son los componentes que realmente fortalecen tu labor como operador." },
+      { start: 121, end: 9999, text: "En la siguiente lección profundizaremos en los conceptos básicos de telefonía, indispensables para comprender el funcionamiento del sistema en cada llamada." }
+    ];
 
+    /* ===== Elementos ===== */
+    const flipCard = document.getElementById('flipCard');
+    const inner = document.querySelector('.flip-card-inner');
     const transcriptEl = document.getElementById('transcript');
+    const player = document.getElementById('player');
+    const status  = document.getElementById('status');
+    const meta    = document.getElementById('meta');
+
+    let activeIndex = -1;
+    let autoScroll = true;
+
+    // Construir transcripción
     cuesData.forEach((cue, i)=>{
       const line = document.createElement('div');
       line.className = 'line';
       line.dataset.index = i;
       line.dataset.start = cue.start;
       line.dataset.end = cue.end;
+
       const t = document.createElement('span');
       t.className = 'time';
       t.textContent = formatTime(cue.start);
+
       const text = document.createElement('span');
       text.innerHTML = cue.text;
+
       line.appendChild(t);
       line.appendChild(text);
       line.tabIndex = 0;
       line.setAttribute('role','button');
       line.setAttribute('aria-label', `Saltar a ${formatTime(cue.start)}`);
       line.addEventListener('click', ()=>{ player.currentTime = cue.start + 0.01; player.play(); });
+
       transcriptEl.appendChild(line);
     });
 
-    const player = document.getElementById('player');
-    const status  = document.getElementById('status');
-    const meta    = document.getElementById('meta');
-    let activeIndex = -1;
-    let autoScroll = true;
-
-    // Botones de reproducción
+    // Botones
     const btnPlay = document.getElementById('btnPlay');
     const btnBack = document.getElementById('btnBack');
     const btnFwd  = document.getElementById('btnFwd');
 
-    // Toggle de autodesplazamiento
+    // Toggle Autodesplazar
     document.getElementById('chkAutoscroll').addEventListener('change', (e)=> autoScroll = e.target.checked);
 
-    // Handlers
+    // Flip (todos los botones con clase .btnFlip)
+    document.querySelectorAll('.btnFlip').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        flipCard.classList.toggle('flipped');
+        // Recalcular altura tras el giro (por si cambia el contenido visible)
+        setTimeout(syncCardHeight, 0);
+      });
+    });
+
+    // Atajos de teclado para voltear
+    window.addEventListener('keydown', (e)=>{
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (['f','t'].includes(e.key.toLowerCase())){
+        flipCard.classList.toggle('flipped');
+        setTimeout(syncCardHeight, 0);
+      }
+    });
+
+    // Doble clic en la tarjeta también voltea
+    inner.addEventListener('dblclick', ()=>{
+      flipCard.classList.toggle('flipped');
+      setTimeout(syncCardHeight, 0);
+    });
+
+    // Handlers reproducción
     btnPlay.addEventListener('click', ()=> player.paused ? player.play() : player.pause());
     btnBack.addEventListener('click', ()=> player.currentTime = Math.max(0, player.currentTime-10));
     btnFwd .addEventListener('click', ()=> player.currentTime = Math.min(player.duration||1, player.currentTime+10));
 
-    // Cambia imagen Play/Pausa
-   function setPauseIcon(){
-  btnPlay.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
-      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#004E94"/><stop offset="1" stop-color="#0060b8"/>
-      </linearGradient></defs>
-      <circle cx="38" cy="38" r="34" fill="url(#g)"/>
-      <rect x="29" y="24" width="6" height="28" rx="2" fill="#fff"/>
-      <rect x="41" y="24" width="6" height="28" rx="2" fill="#fff"/>
-      <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
-    </svg>`;
-}
-
-function setPlayIcon(){
-  btnPlay.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
-      <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#004E94"/><stop offset="1" stop-color="#0060b8"/>
-      </linearGradient></defs>
-      <circle cx="38" cy="38" r="34" fill="url(#g2)"/>
-      <path d="M31 25l22 13-22 13z" fill="#fff" opacity=".97"/>
-      <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
-    </svg>`;
-}
-
-
-    // Atajos
+    // Atajos de reproducción
     window.addEventListener('keydown', (e)=>{
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      if (e.code === 'Space' || e.key === 'k') { e.preventDefault(); player.paused ? player.play() : player.pause(); }
-      if (e.key === 'j') { player.currentTime = Math.max(0, player.currentTime-10); }
-      if (e.key === 'l') { player.currentTime = Math.min(player.duration||1, player.currentTime+10); }
+      if (e.code === 'Space' || e.key.toLowerCase() === 'k') { e.preventDefault(); player.paused ? player.play() : player.pause(); }
+      if (e.key.toLowerCase() === 'j') { player.currentTime = Math.max(0, player.currentTime-10); }
+      if (e.key.toLowerCase() === 'l') { player.currentTime = Math.min(player.duration||1, player.currentTime+10); }
     });
 
     // Eventos del reproductor
     player.addEventListener('loadedmetadata', ()=>{
       meta.textContent = `${formatTime(0)} / ${formatTime(player.duration||0)}`;
       status.textContent = 'Listo';
+      // Ajusta altura una vez que sabemos el alto de portada/meta
+      syncCardHeight();
     });
 
     player.addEventListener('timeupdate', ()=>{
@@ -437,6 +422,32 @@ function setPlayIcon(){
       setPlayIcon();
     });
 
+    // Íconos Play/Pausa (SVG)
+    function setPauseIcon(){
+      btnPlay.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+          <defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#004E94"/><stop offset="1" stop-color="#0060b8"/>
+          </linearGradient></defs>
+          <circle cx="38" cy="38" r="34" fill="url(#g4)"/>
+          <rect x="29" y="24" width="6" height="28" rx="2" fill="#fff"/>
+          <rect x="41" y="24" width="6" height="28" rx="2" fill="#fff"/>
+          <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
+        </svg>`;
+    }
+    function setPlayIcon(){
+      btnPlay.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76">
+          <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#004E94"/><stop offset="1" stop-color="#0060b8"/>
+          </linearGradient></defs>
+          <circle cx="38" cy="38" r="34" fill="url(#g2)"/>
+          <path d="M31 25l22 13-22 13z" fill="#fff" opacity=".97"/>
+          <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
+        </svg>`;
+    }
+
+    // Resaltado y autoscroll
     function highlightFor(t){
       let idx = cuesData.findIndex(c=> t>=c.start && t<c.end);
       if (idx === -1 && t >= (cuesData[cuesData.length-1]?.end||Infinity)) idx = cuesData.length-1;
@@ -458,9 +469,24 @@ function setPlayIcon(){
       return `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
     }
 
-    // Inicializa icono
-    setPlayIcon();
-  </script>
+    /* ===== Altura dinámica: toma la mayor de ambas caras ===== */
+    function syncCardHeight(){
+      const faces = Array.from(document.querySelectorAll('.face'));
+      // Limpio altura para medir correctamente
+      inner.style.height = '';
+      const maxH = Math.max(...faces.map(f => f.scrollHeight));
+      inner.style.height = maxH + 'px';
+    }
 
+
+    // Recalcular al redimensionar ventana
+    window.addEventListener('resize', syncCardHeight);
+
+    // Icono inicial
+    setPlayIcon();
+
+    // Por si el audio tarda en cargar, asegura un primer cálculo
+    window.addEventListener('load', syncCardHeight);
+  </script>
 </body>
 </html>
