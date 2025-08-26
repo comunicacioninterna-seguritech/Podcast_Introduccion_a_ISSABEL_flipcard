@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Podcast: Introducción a ISSABEL</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Colores */
+    :root{
+      --bg:#004E94;           /* Fondo global */
+      --card:#ffffff;         /* Superficie de tarjeta */
+      --text:#000000;         /* Texto principal */
+      --muted:#B4B7BE;        /* Texto secundario */
+      --accent:#004E94;       /* Botones/activos */
+      --accent-hover:#0060b8; /* Hover */
+      --alert:#BD423C;        /* Acentos */
+      --border:#e5e7eb;       /* Bordes claros */
+      --chip:#eff6ff;         /* Suave para resaltes */
+    }
+
+    html,body{height:100%}
+    body {
+  margin:0;
+  font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Inter, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap:24px;
+      align-items:start
+    }
+
+
+header{
+  grid-column: 1/3;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; 
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+header h1{
+  grid-column: 2;           
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 24px;          
+  text-align: center;
+  margin: 0;
+  letter-spacing: .2px;
+}
+
+header .badge{
+  grid-column: 3;          
+  justify-self: end;        
+  margin-left: 0;           
+  font-size: 12px;
+  color: var(--muted);
+}
+
+
+    .left{padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px}
+    .cover{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+
+    /* Controles personalizados */
+    .controls{display:flex;gap:16px;align-items:center;justify-content:center}
+    .controls-row{display:flex;gap:16px;align-items:center;justify-content:center}
+    .controls-bottom{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:8px}
+
+    .btn{
+      appearance:none;border:0;background:transparent;cursor:pointer;
+      padding:0;border-radius:14px;outline-offset:4px;
+      transition:transform .08s ease, filter .15s ease;
+    }
+    .btn:focus-visible{outline:2px solid var(--accent)}
+    .btn:hover{transform:translateY(-1px);filter:drop-shadow(0 4px 10px rgba(0,0,0,.15))}
+    .btn img{display:block;width:76px;height:76px}
+
+    /* Texto pequeño y meta */
+    .meta {
+  font-size: 25px;
+  color: var(--muted);
+  text-align: center;
+  margin: 12px 0; 
+}
+
+
+    .right{padding:20px;border-left:1px solid var(--border)}
+    .transcript{max-height:70vh;overflow:auto;padding:10px 20px 20px;scroll-behavior:smooth}
+    .line{padding:6px 8px;border-radius:10px;margin:4px 0;line-height:1.5;border:1px solid transparent}
+    .line .time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:16px;color:var(--muted);margin-right:8px}
+    .line.active{background:linear-gradient(90deg, rgba(0,78,148,.12), rgba(0,78,148,.04));border-color:#b3cbe1}
+    .line.active .time{color:#5aa0db}
+
+    .footer{
+      grid-column: 1/3;display:flex;justify-content:space-between;align-items:center;
+      padding:12px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)
+    }
+
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .kbd{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      background:var(--chip);border:1px solid var(--border);border-bottom-color:#d1d5db;border-radius:6px;padding:1px 6px;font-size:12px;color:#111827
+    }
+    .line:focus{outline:2px solid var(--accent);outline-offset:2px}
+
+    /* Toggle autodesplazamiento */
+    .toggle{
+      display:inline-flex;gap:8px;align-items:center;
+      background:#f3f4f6;border:1px solid var(--border);border-radius:12px;
+      padding:8px 12px;font-weight:600;color:#111827;
+    }
+    .toggle input{accent-color:var(--accent)}
+
+.line span:not(.time) {
+  display: inline-block;
+  text-align: justify;
+  width: 100%; 
+}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="application" aria-label="Reproductor de audio con transcripción sincronizada">
+      <header>
+        <h1>Podcast: Introducción a ISSABEL</h1>
+        <span class="badge" id="status">Sin iniciar</span>
+      </header>
+
+      <!-- Columna izquierda -->
+      <div class="left">
+        <!-- Portada -->
+        <img src="Introduccion_a_ISSABEL.png" alt="Portada del podcast" class="cover"/>
+
+        <!-- Audio SIN controles nativos -->
+        <audio id="player" src="Introduccion_a_ISSABEL.mp3" preload="auto"></audio>
+
+        <!-- Controles personalizados -->
+        <div class="controls">
+          <div class="controls-col">
+              <div class="meta" id="meta" aria-live="polite" >00:00 / 00:00</div>
+
+            <div class="controls">
+  <div class="controls-col">
+    <div class="controls-row" role="group" aria-label="Controles de reproducción">
+
+      <!-- Retroceder 10s -->
+      <button id="btnBack" class="btn" aria-label="Retroceder 10 segundos">
+        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#0060b8"/>
+              <stop offset="1" stop-color="#004E94"/>
+            </linearGradient>
+          </defs>
+          <circle cx="38" cy="38" r="34" fill="url(#g)"/>
+          <path d="M45 27v22l-16-11z" fill="#fff" opacity=".95"/>
+          <path d="M33 27v22l-16-11z" fill="#fff" opacity=".95"/>
+        </svg>
+      </button>
+
+      <!-- Play/Pausa -->
+      <button id="btnPlay" class="btn" aria-label="Reproducir o Pausar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
+          <defs>
+            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#004E94"/>
+              <stop offset="1" stop-color="#0060b8"/>
+            </linearGradient>
+          </defs>
+          <circle cx="38" cy="38" r="34" fill="url(#g2)"/>
+          <path d="M31 25l22 13-22 13z" fill="#fff" opacity=".97"/>
+          <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
+        </svg>
+      </button>
+
+      <!-- Avanzar 10s -->
+      <button id="btnFwd" class="btn" aria-label="Avanzar 10 segundos">
+        <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
+          <defs>
+            <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#0060b8"/>
+              <stop offset="1" stop-color="#004E94"/>
+            </linearGradient>
+          </defs>
+          <circle cx="38" cy="38" r="34" fill="url(#g3)"/>
+          <path d="M31 27v22l16-11z" fill="#fff" opacity=".95"/>
+          <path d="M43 27v22l16-11z" fill="#fff" opacity=".95"/>
+        </svg>
+      </button>
+
+    </div>
+  </div>
+</div>
+
+
+            <!-- Debajo: Autodesplazar + tiempo -->
+            <div class="controls-bottom">
+              <label class="toggle">
+                <input id="chkAutoscroll" type="checkbox" checked /> Autodesplazar
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha -->
+      <div class="right">
+        <div class="transcript" id="transcript" aria-live="polite" aria-label="Transcripción sincronizada"></div>
+      </div>
+
+      <div class="footer">
+        <div>
+          <strong>Atajos:</strong>
+          <span class="kbd">Espacio</span> Play/Pausa ·
+          <span class="kbd">J</span> -10s ·
+          <span class="kbd">L</span> +10s ·
+          <span class="kbd">K</span> Play/Pausa
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <script>
+   const cuesData = [
+    { start: 3,   end: 8,   text: "En un Centro de Atención de Llamadas de Emergencia, todo comienza con una llamada." },
+    { start: 8,   end: 18,  text: "Para que esa llamada llegue de manera ordenada y pueda registrarse en el sistema <strong>CAD Saimon</strong>, existe <strong>ISSABEL</strong>, la solución que administra la telefonía y conecta al ciudadano con el operador." },
+    { start: 18,  end: 26,  text: "<strong>ISSABEL</strong> es el módulo que recibe las llamadas, permite contestarlas, transferirlas, ponerlas en espera o unirlas en conferencia." },
+    { start: 26,  end: 35,  text: "Al estar conectado con el <strong>CAD Saimon</strong>, cada llamada queda ligada de inmediato a un folio de incidente, lo que asegura un registro completo para dar seguimiento oportuno." },
+    { start: 35,  end: 42,  text: "<strong>En pocas palabras:</strong> ISSABEL gestiona la llamada y el CAD organiza la emergencia, integrando más recursos para la atención." },
+    { start: 42,  end: 50,  text: "Ambos trabajan juntos para que el operador pueda enfocarse en lo más importante: escuchar al ciudadano, responder con rapidez y no perder información en el proceso." },
+    { start: 50,  end: 61,  text: "Dentro del sistema CAD Saimon, ISSABEL tiene la capacidad de integrar varios servicios de comunicación. Sin embargo, para el trabajo del operador destacan dos componentes esenciales:" },
+    { start: 61,  end: 80,  text: "<ul><li><strong>El PBX IP</strong>, que es el corazón de la telefonía. Administra las llamadas entrantes y salientes, organiza las extensiones de los operadores y gestiona las colas de atención. Gracias a él es posible contestar, transferir, poner en espera y realizar conferencias, asegurando que cada comunicación llegue a su destino correcto.</li></ul>" },
+    { start: 80,  end: 92,  text: "<ul><li><strong>La grabación de llamadas</strong>, que conserva un respaldo de todas las interacciones. Estas grabaciones sirven como evidencia en caso de requerirse por alguna autoridad y garantizan control, seguridad y seguimiento de cada reporte.</li></ul>" },
+    { start: 92,  end: 102, text: "En el contexto operativo, ISSABEL permite que la comunicación sea continua, que las llamadas se asignen de forma ordenada y que exista un control confiable de cada interacción." },
+    { start: 102, end: 111, text: "De esta manera, el sistema respalda al operador en su labor diaria, reduciendo el riesgo de pérdida de información y facilitando la coordinación con otras corporaciones." },
+    { start: 111, end: 121, text: "¡Muy bien! Con esto ya tienes una visión más amplia de qué es ISSABEL, cómo se conecta con el CAD Saimon y cuáles son los componentes que realmente fortalecen tu labor como operador." },
+    { start: 121, end: 9999, text: "En la siguiente lección profundizaremos en los conceptos básicos de telefonía, indispensables para comprender el funcionamiento del sistema en cada llamada." }
+   ];
+
+    const transcriptEl = document.getElementById('transcript');
+    cuesData.forEach((cue, i)=>{
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.dataset.index = i;
+      line.dataset.start = cue.start;
+      line.dataset.end = cue.end;
+      const t = document.createElement('span');
+      t.className = 'time';
+      t.textContent = formatTime(cue.start);
+      const text = document.createElement('span');
+      text.innerHTML = cue.text;
+      line.appendChild(t);
+      line.appendChild(text);
+      line.tabIndex = 0;
+      line.setAttribute('role','button');
+      line.setAttribute('aria-label', `Saltar a ${formatTime(cue.start)}`);
+      line.addEventListener('click', ()=>{ player.currentTime = cue.start + 0.01; player.play(); });
+      transcriptEl.appendChild(line);
+    });
+
+    const player = document.getElementById('player');
+    const status  = document.getElementById('status');
+    const meta    = document.getElementById('meta');
+    let activeIndex = -1;
+    let autoScroll = true;
+
+    // Botones de reproducción
+    const btnPlay = document.getElementById('btnPlay');
+    const btnBack = document.getElementById('btnBack');
+    const btnFwd  = document.getElementById('btnFwd');
+
+    // Toggle de autodesplazamiento
+    document.getElementById('chkAutoscroll').addEventListener('change', (e)=> autoScroll = e.target.checked);
+
+    // Handlers
+    btnPlay.addEventListener('click', ()=> player.paused ? player.play() : player.pause());
+    btnBack.addEventListener('click', ()=> player.currentTime = Math.max(0, player.currentTime-10));
+    btnFwd .addEventListener('click', ()=> player.currentTime = Math.min(player.duration||1, player.currentTime+10));
+
+    // Cambia imagen Play/Pausa
+   function setPauseIcon(){
+  btnPlay.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#004E94"/><stop offset="1" stop-color="#0060b8"/>
+      </linearGradient></defs>
+      <circle cx="38" cy="38" r="34" fill="url(#g)"/>
+      <rect x="29" y="24" width="6" height="28" rx="2" fill="#fff"/>
+      <rect x="41" y="24" width="6" height="28" rx="2" fill="#fff"/>
+      <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
+    </svg>`;
+}
+
+function setPlayIcon(){
+  btnPlay.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 76 76">
+      <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#004E94"/><stop offset="1" stop-color="#0060b8"/>
+      </linearGradient></defs>
+      <circle cx="38" cy="38" r="34" fill="url(#g2)"/>
+      <path d="M31 25l22 13-22 13z" fill="#fff" opacity=".97"/>
+      <circle cx="38" cy="38" r="34" fill="none" stroke="#ffffff55" stroke-width="2"/>
+    </svg>`;
+}
+
+
+    // Atajos
+    window.addEventListener('keydown', (e)=>{
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space' || e.key === 'k') { e.preventDefault(); player.paused ? player.play() : player.pause(); }
+      if (e.key === 'j') { player.currentTime = Math.max(0, player.currentTime-10); }
+      if (e.key === 'l') { player.currentTime = Math.min(player.duration||1, player.currentTime+10); }
+    });
+
+    // Eventos del reproductor
+    player.addEventListener('loadedmetadata', ()=>{
+      meta.textContent = `${formatTime(0)} / ${formatTime(player.duration||0)}`;
+      status.textContent = 'Listo';
+    });
+
+    player.addEventListener('timeupdate', ()=>{
+      meta.textContent = `${formatTime(player.currentTime)} / ${formatTime(player.duration||0)}`;
+      highlightFor(player.currentTime);
+    });
+
+    player.addEventListener('play', ()=>{
+      status.textContent = 'Reproduciendo';
+      setPauseIcon();
+    });
+
+    player.addEventListener('pause', ()=>{
+      status.textContent = 'En pausa';
+      setPlayIcon();
+    });
+
+    player.addEventListener('ended', ()=>{
+      status.textContent = 'Terminado';
+      setPlayIcon();
+    });
+
+    function highlightFor(t){
+      let idx = cuesData.findIndex(c=> t>=c.start && t<c.end);
+      if (idx === -1 && t >= (cuesData[cuesData.length-1]?.end||Infinity)) idx = cuesData.length-1;
+      if (idx !== activeIndex){
+        const prev = transcriptEl.querySelector('.line.active');
+        if (prev) prev.classList.remove('active');
+        const next = transcriptEl.querySelector(`.line[data-index="${idx}"]`);
+        if (next){
+          next.classList.add('active');
+          if (autoScroll) next.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+        activeIndex = idx;
+      }
+    }
+
+    function formatTime(s){
+      if (!Number.isFinite(s)) return '00:00';
+      const m = Math.floor(s/60); const ss = Math.floor(s%60);
+      return `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    }
+
+    // Inicializa icono
+    setPlayIcon();
+  </script>
+
+</body>
+</html>
